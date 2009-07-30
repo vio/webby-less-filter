@@ -1,7 +1,7 @@
 # LESS filter for Webby
 # =====================
 #   
-# This filter allows you to use LESS syntax in your for Webby files.
+# This filter allows you to use LESS syntax in your Webby files.
 #   
 #   * LESS extends CSS with variables, mixins, operations, and nested rules:
 #     http://lesscss.org/
