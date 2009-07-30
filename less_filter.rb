@@ -69,9 +69,54 @@ module Webby
       end
     end
 
-    register :less do |input, cursor|
-      LessFilter.new(input, cursor).filter
+    # Don't attempt to register with Webby if the script is being run directly
+    unless __FILE__ == $0
+      register :less do |input, cursor|
+        LessFilter.new(input, cursor).filter
+      end
     end
+  end
+end
 
+
+if __FILE__ == $0
+  # To run the tests, just run this file on it's own:
+  #  
+  #   $ ruby less_filter.rb
+  #  
+  # or if you need RubyGems:
+  #  
+  #   $ ruby -rrubygems less_filter.rb
+  #  
+  # The tests require Shoulda <http://www.thoughtbot.com/projects/shoulda/>
+  # and Mocha <http://mocha.rubyforge.org/>
+  require 'shoulda'
+  require 'mocha'
+
+  class LessFilterTest < Test::Unit::TestCase
+    context "LessFilter" do
+      context "as as instance" do
+        setup do
+          @css = 'body { color: black }'
+          @filter = Webby::Filters::LessFilter.new(@css, mock('cursor'))
+        end
+
+        should "expose the input text" do
+          assert_equal @css, @filter.input
+        end
+
+        context "when being called as a filter" do
+          should "pass the input to Less" do
+            Less.expects(:parse).with(@css).once
+            @filter.filter
+          end
+
+          should "return the parsed output from Less" do
+            Less.expects(:parse).with(@css).returns('output')
+            assert_equal 'output', @filter.filter
+          end
+        end
+      end 
+    end
   end
 end
